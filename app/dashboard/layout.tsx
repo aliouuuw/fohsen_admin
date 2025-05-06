@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { Header } from "@/components/dashboard/header"
+import { BreadcrumbProvider } from "@/components/dashboard/breadcrumb-provider"
 import { getUserAction } from "@/lib/authism/server/actions/auth"
 import { redirect } from "next/navigation"
 
@@ -19,6 +20,9 @@ export default async function DashboardLayout({
       <div className="flex-1">
         <Header />
         <main className="border-l p-6">
+          <div className="mb-4">
+            <BreadcrumbProvider />
+          </div>
           {children}
         </main>
       </div>

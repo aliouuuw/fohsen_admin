@@ -232,7 +232,7 @@ export default function EditCoursePage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Edit Course</h1>
+            <h1 className="text-3xl font-bold">Éditer le cours</h1>
             <p className="text-muted-foreground mt-1">
               Mettre à jour le contenu du cours, les quiz et les ressources
             </p>

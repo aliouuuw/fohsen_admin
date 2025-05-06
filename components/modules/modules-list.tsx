@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Pencil, Eye, Trash, BookOpen } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash, BookOpen } from "lucide-react"
 import Link from "next/link"
 
 // Mock data - will be replaced with real data
@@ -25,16 +25,20 @@ const modules = [
     id: "1",
     title: "Introduction aux soins de santé",
     totalCourses: 3,
-    progress: 75,
-    status: "published",
+    accomplished: 2,
+    registered: 10,
+    level: "débutant",
+    status: "publié",
     lastUpdated: "2024-03-15",
   },
   {
     id: "2",
     title: "Prise en charge des maladies courantes",
     totalCourses: 4,
-    progress: 50,
-    status: "draft",
+    accomplished: 0,
+    registered: 10,
+    level: "intermédiaire",
+    status: "brouillon",
     lastUpdated: "2024-03-14",
   },
 ]
@@ -50,11 +54,12 @@ export function ModulesList({ formationId }: ModulesListProps) {
         <TableHeader>
           <TableRow>
             <TableHead>#</TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead>Total Courses</TableHead>
-            <TableHead>Progress</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Last Updated</TableHead>
+            <TableHead>Titre</TableHead>
+            <TableHead>Cours</TableHead>
+            <TableHead>Niveau</TableHead>
+            <TableHead>Accomplis</TableHead>
+            <TableHead>Statut</TableHead>
+            <TableHead>Date de mise à jour</TableHead>
             <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -64,9 +69,10 @@ export function ModulesList({ formationId }: ModulesListProps) {
               <TableCell>{module.id}</TableCell>
               <TableCell className="font-medium"><Link className="hover:underline" href={`/dashboard/formations/${formationId}/modules/${module.id}/courses`}>{module.title}</Link></TableCell>
               <TableCell>{module.totalCourses}</TableCell>
-              <TableCell>{module.progress}%</TableCell>
+              <TableCell><Badge variant={module.level === "débutant" ? "beginner" : module.level === "intermédiaire" ? "intermediate" : "advanced"}>{module.level}</Badge></TableCell>
+              <TableCell>{module.accomplished}/{module.registered}</TableCell>
               <TableCell>
-                <Badge variant={module.status === "published" ? "default" : "secondary"}>
+                <Badge variant={module.status === "publié" ? "default" : "secondary"}>
                   {module.status}
                 </Badge>
               </TableCell>
@@ -84,20 +90,16 @@ export function ModulesList({ formationId }: ModulesListProps) {
                     <Link href={`/dashboard/formations/${formationId}/modules/${module.id}/courses`}>
                       <DropdownMenuItem>
                         <BookOpen className="mr-2 h-4 w-4" />
-                        Manage Courses
+                        Gérer les cours
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuItem>
-                      <Eye className="mr-2 h-4 w-4" />
-                      View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
                       <Pencil className="mr-2 h-4 w-4" />
-                      Edit
+                      Modifier
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">
                       <Trash className="mr-2 h-4 w-4" />
-                      Delete
+                      Supprimer
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

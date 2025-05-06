@@ -16,7 +16,7 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
   import { Button } from "@/components/ui/button"
-  import { MoreHorizontal, Pencil, Eye, Trash, Book } from "lucide-react"
+  import { MoreHorizontal, Pencil, Trash, Book } from "lucide-react"
   import Link from "next/link"
   
   // Temporary mock data
@@ -25,7 +25,7 @@ import {
       id: "1",
       title: "Formation en Santé Communautaire",
       totalModules: 5,
-      totalStudents: 120,
+      totalStudents: 10,
       status: "active",
       lastUpdated: "2024-03-15",
     },
@@ -45,17 +45,19 @@ import {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Total Modules</TableHead>
-              <TableHead>Total Students</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Last Updated</TableHead>
+              <TableHead>#</TableHead>
+              <TableHead>Titre</TableHead>
+              <TableHead>Modules</TableHead>
+              <TableHead>Inscrits</TableHead>
+              <TableHead>Statut</TableHead>
+              <TableHead>Date de mise à jour</TableHead>
               <TableHead className="w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {formations.map((formation) => (
               <TableRow key={formation.id}>
+                <TableCell>{formation.id}</TableCell>
                 <TableCell className="font-medium"><Link className="hover:underline" href={`/dashboard/formations/${formation.id}`}>{formation.title}</Link></TableCell>
                 <TableCell>{formation.totalModules}</TableCell>
                 <TableCell>{formation.totalStudents}</TableCell>
@@ -78,20 +80,16 @@ import {
                       <Link href={`/dashboard/formations/${formation.id}/modules`}>
                         <DropdownMenuItem>
                           <Book className="mr-2 h-4 w-4" />
-                          Manage Modules
+                          Gérer les modules
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuItem>
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
                         <Pencil className="mr-2 h-4 w-4" />
-                        Edit
+                        Modifier
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-red-600">
                         <Trash className="mr-2 h-4 w-4" />
-                        Delete
+                        Supprimer
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

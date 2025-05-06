@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -56,9 +55,9 @@ export function ModuleForm() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Module Title</FormLabel>
+              <FormLabel>Titre du module  </FormLabel>
               <FormControl>
-                <Input placeholder="Enter module title" {...field} />
+                <Input placeholder="Entrer le titre du module" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -73,7 +72,7 @@ export function ModuleForm() {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter module description"
+                  placeholder="Entrer la description du module"
                   className="resize-none"
                   {...field}
                 />
@@ -88,17 +87,17 @@ export function ModuleForm() {
           name="level"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Level</FormLabel>
+              <FormLabel>Niveau</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select module level" />
+                    <SelectValue placeholder="Sélectionner le niveau du module" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="beginner">Beginner</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="advanced">Advanced</SelectItem>
+                  <SelectItem value="beginner">Débutant</SelectItem>
+                  <SelectItem value="intermediate">Intermédiaire</SelectItem>
+                  <SelectItem value="advanced">Avancé</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -106,41 +105,10 @@ export function ModuleForm() {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="duration"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Duration (hours)</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Price (optional)</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="0.00" {...field} />
-              </FormControl>
-              <FormDescription>
-                Leave empty if the course is free
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <div className="flex gap-4">
-          <Button type="submit">Create Course</Button>
+          <Button type="submit">Créer le module</Button>
           <Button type="button" variant="outline">
-            Cancel
+            Annuler
           </Button>
         </div>
       </form>

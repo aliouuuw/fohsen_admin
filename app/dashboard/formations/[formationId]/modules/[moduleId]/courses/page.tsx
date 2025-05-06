@@ -13,9 +13,9 @@ export default function ModuleCoursesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Courses</h1>
+          <h1 className="text-3xl font-bold">Cours</h1>
           <p className="text-muted-foreground mt-2">
-            Manage courses for Module 1: Introduction aux soins de santé
+            Gérer les cours pour le module 1: Introduction aux soins de santé
           </p>
         </div>
         <Link 
@@ -23,7 +23,7 @@ export default function ModuleCoursesPage() {
         >
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
-            New Course
+            Nouveau cours
           </Button>
         </Link>
       </div>

@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { ModulesList } from "@/components/modules/modules-list"
+import { ModuleForm } from "@/components/modules/module-form"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+
 export default function ModulesPage() {
   return (
     <div className="space-y-6">
@@ -12,13 +14,14 @@ export default function ModulesPage() {
           <DialogTrigger asChild>
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
-              New Module
+              Nouveau module
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create New Module</DialogTitle>
+              <DialogTitle>Créer un nouveau module</DialogTitle>
             </DialogHeader>
+            <ModuleForm />
           </DialogContent>
         </Dialog>
       </div>

@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Bell, User } from "lucide-react"
-
+import { LogoutButton } from "@/lib/authism/client/components/logout-button"
 export function Header() {
   return (
     <header className="border-b bg-sidebar-primary text-sidebar-primary-foreground">
@@ -29,7 +29,9 @@ export function Header() {
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Sign out</DropdownMenuItem>
+              <DropdownMenuItem>
+                <LogoutButton />
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

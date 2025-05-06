@@ -1,7 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getUserAction } from "@/lib/authism/server/actions/auth"
 import { BookOpen, Users, BarChart, Trophy } from "lucide-react"
-
-export default function DashboardPage() {
+import { redirect } from "next/navigation"
+export default async function DashboardPage() {
+  const user = await getUserAction()  
+  if (!user) {
+    redirect("/")
+  }
+  
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Dashboard</h1>

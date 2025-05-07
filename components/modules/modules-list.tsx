@@ -5,8 +5,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,69 +14,71 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Pencil, Trash, BookOpen } from "lucide-react"
-import Link from "next/link"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Pencil, Trash, BookOpen, Eye } from "lucide-react";
+import Link from "next/link";
 
-// Mock data - will be replaced with real data
-const modules = [
-  {
-    id: "1",
-    title: "Introduction aux soins de santé",
-    totalCourses: 3,
-    accomplished: 2,
-    registered: 10,
-    level: "débutant",
-    status: "publié",
-    lastUpdated: "2024-03-15",
-  },
-  {
-    id: "2",
-    title: "Prise en charge des maladies courantes",
-    totalCourses: 4,
-    accomplished: 0,
-    registered: 10,
-    level: "intermédiaire",
-    status: "brouillon",
-    lastUpdated: "2024-03-14",
-  },
-]
+// Mock data - REMOVE THIS SECTION
+// const modules = [...]
 
-interface ModulesListProps {
-  formationId: string
+// Define expected data structure based on server action
+interface ModuleListItem {
+  id: number; // Match schema ID type
+  title: string;
+  description: string | null;
+  order: number;
+  level: string; // Use string for enum display
+  status: string; // Use string for enum display
+  formationId: number; // Match schema ID type
+  createdAt: string;
+  updatedAt: string;
+  _count: {
+    courses: number; // From include _count
+  };
 }
 
-export function ModulesList({ formationId }: ModulesListProps) {
+interface ModulesListProps {
+  formationId: string; // Keep as string for URL params
+  modules: ModuleListItem[]; // Accept fetched data
+}
+
+// Update component signature
+export function ModulesList({ formationId, modules }: ModulesListProps) {
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Titre</TableHead>
-            <TableHead>Cours</TableHead>
-            <TableHead>Niveau</TableHead>
-            <TableHead>Accomplis</TableHead>
-            <TableHead>Statut</TableHead>
-            <TableHead>Date de mise à jour</TableHead>
+            <TableHead>Order</TableHead>
+            <TableHead>Title</TableHead>
+            <TableHead>Courses</TableHead>
+            <TableHead>Level</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Last Updated</TableHead>
             <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
+          {/* Map over fetched modules */}
           {modules.map((module) => (
             <TableRow key={module.id}>
-              <TableCell>{module.id}</TableCell>
-              <TableCell className="font-medium"><Link className="hover:underline" href={`/dashboard/formations/${formationId}/modules/${module.id}/courses`}>{module.title}</Link></TableCell>
-              <TableCell>{module.totalCourses}</TableCell>
-              <TableCell><Badge variant={module.level === "débutant" ? "beginner" : module.level === "intermédiaire" ? "intermediate" : "advanced"}>{module.level}</Badge></TableCell>
-              <TableCell>{module.accomplished}/{module.registered}</TableCell>
+              <TableCell>{module.order}</TableCell>
+              <TableCell className="font-medium">{module.title}</TableCell>
+              <TableCell>{module._count.courses}</TableCell>
+              <TableCell>{module.level}</TableCell>
               <TableCell>
-                <Badge variant={module.status === "publié" ? "default" : "secondary"}>
+                <Badge
+                  variant={
+                    module.status === "PUBLISHED" ? "default" : "secondary"
+                  }
+                >
                   {module.status}
                 </Badge>
               </TableCell>
-              <TableCell>{module.lastUpdated}</TableCell>
+              <TableCell>
+                {new Date(module.updatedAt).toLocaleDateString()}
+              </TableCell>
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -87,19 +89,23 @@ export function ModulesList({ formationId }: ModulesListProps) {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <Link href={`/dashboard/formations/${formationId}/modules/${module.id}/courses`}>
+                    <Link
+                      href={`/dashboard/formations/${formationId}/modules/${module.id}/courses`}
+                    >
                       <DropdownMenuItem>
                         <BookOpen className="mr-2 h-4 w-4" />
-                        Gérer les cours
+                        Manage Courses
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuItem>
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Modifier
+                      <Eye className="mr-2 h-4 w-4" /> View Details
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Pencil className="mr-2 h-4 w-4" /> Edit{" "}
+                      {/* Link to /dashboard/formations/${formationId}/modules/${module.id}/edit */}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">
-                      <Trash className="mr-2 h-4 w-4" />
-                      Supprimer
+                      <Trash className="mr-2 h-4 w-4" /> Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -109,5 +115,5 @@ export function ModulesList({ formationId }: ModulesListProps) {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

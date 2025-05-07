@@ -13,7 +13,6 @@ import {
   FileText,
   Target,
   Activity,
-  Check,
   ArrowRight,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,7 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ResourcesTab } from "@/components/courses/ressources-tab";
+import { Resource, ResourcesTab } from "@/components/courses/ressources-tab";
+import { createCourse } from "@/app/actions/courses/actions";
 
 // Template for a new course
 const newCourseTemplate = {
@@ -50,11 +50,31 @@ const newCourseTemplate = {
   resources: [],
 };
 
+// Define the structure for the course state
+interface CourseState {
+  title: string;
+  introduction: string;
+  objective: string;
+  videoTitle: string;
+  videoUrl: string;
+  sections: { id: string; title: string; content: string }[];
+  quiz: {
+    question: string;
+    options: string[];
+    correctAnswers: number[];
+  };
+  conclusion: string;
+  resources: Resource[]; // Define a proper type for resources if available
+}
+
 export default function NewCoursePage() {
-  const params = useParams();
   const router = useRouter();
-  const [course, setCourse] = useState(newCourseTemplate);
+  const params = useParams();
+  const formationId = params.formationId as string;
+  const moduleId = params.moduleId as string;
+  const [course, setCourse] = useState<CourseState>(newCourseTemplate); // Use the defined type
   const [activeTab, setActiveTab] = useState("basic");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Handler functions for updating course content
   const updateCourseField = (field: string, value: string) => {
@@ -128,14 +148,35 @@ export default function NewCoursePage() {
     });
   };
 
-  const handleCreate = async () => {
-    // Here you would typically make an API call to create the course
-    console.log("Creating course:", course);
+  // Renamed function to handle the create action directly
+  const handleCreateCourse = async () => {
+    try {
+      setIsLoading(true);
+      // Call the server action to create the course
+      const result = await createCourse({
+        title: course.title, // Use state data
+        introduction: course.introduction, // Use state data
+        objective: course.objective, // Use state data
+        videoTitle: course.videoTitle, // Use state data
+        videoUrl: course.videoUrl, // Use state data
+        moduleId: moduleId, // Pass the module ID from params
+      });
 
-    // Navigate back to courses list after creation
-    router.push(
-      `/dashboard/formations/${params.formationId}/modules/${params.moduleId}/courses`
-    );
+      if (result.success && result.data) {
+        // Redirect to the edit page for the newly created course
+        router.push(`/dashboard/formations/${formationId}/modules/${moduleId}/courses/${result.data.id}/edit`);
+        // Optionally show a success toast here
+      } else {
+        // Handle error, maybe show an error toast
+        console.error("Error creating course:", result.error);
+        // Show error toast
+      }
+    } catch (error) {
+      console.error("Create course error:", error);
+      // Show generic error toast
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const isBasicInfoComplete = () => {
@@ -174,10 +215,6 @@ export default function NewCoursePage() {
             </p>
           </div>
         </div>
-        <Button onClick={handleCreate}>
-          <Check className="mr-2 h-4 w-4" />
-          Créer le cours
-        </Button>
       </div>
 
       <Tabs
@@ -462,7 +499,7 @@ export default function NewCoursePage() {
         {/* Resources Tab */}
         <TabsContent value="resources" className="space-y-6">
           <ResourcesTab 
-            resources={course.resources}
+            resources={course.resources as Resource[]}
             onResourcesChange={(newResources) => 
               setCourse({ ...course, resources: newResources as never[] })
             }
@@ -546,7 +583,13 @@ export default function NewCoursePage() {
             <Button variant="outline" onClick={() => setActiveTab("resources")}>
               Retour aux ressources
             </Button>
-            <Button onClick={handleCreate}>Créer le cours</Button>
+            <Button
+              type="button" // Changed to button type
+              disabled={isLoading}
+              onClick={handleCreateCourse} // Call the new handler
+            >
+              {isLoading ? "Création en cours..." : "Créer le cours"}
+            </Button>
           </div>
         </TabsContent>
       </Tabs>

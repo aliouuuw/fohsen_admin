@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -18,53 +20,56 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardHeader, CardContent, CardFooter } from "../ui/card";
+import { useEffect, useState } from "react";
+import { getCoursesList } from "@/app/actions/courses/actions";
 
-// Mock data based on your mobile app structure
-const courses = [
-  {
-    id: "1",
-    title: "Cours 1: Prise en charge intégrée des maladies de l'enfant",
-    description:
-      "Ce cours couvre les principes de la PCIME pour améliorer la santé des enfants de moins de 5 ans.",
-    thumbnail: "/images/course-1.jpg",
-    status: "publié",
-    lastUpdated: "2024-03-15",
-  },
-  {
-    id: "2",
-    title: "Les signes de danger chez l'enfant",
-    description:
-      "Apprenez à identifier les signes de danger chez l'enfant qui nécessitent une attention médicale immédiate.",
-    thumbnail: "/images/course-2.jpg",
-    status: "brouillon",
-    lastUpdated: "2024-03-14",
-  },
-  {
-    id: "3",
-    title: "La nutrition infantile",
-    description:
-      "Principes fondamentaux de la nutrition infantile et prévention de la malnutrition.",
-    thumbnail: "/images/course-3.jpg",
-    status: "publié",
-    lastUpdated: "2024-02-28",
-  },
-  {
-    id: "4",
-    title: "Vaccination et immunité collective",
-    description:
-      "L'importance des vaccinations infantiles et leur impact sur la santé communautaire.",
-    thumbnail: "/images/course-4.jpg",
-    status: "brouillon",
-    lastUpdated: "2024-02-25",
-  },
-];
-
+interface CourseListItem {
+  id: number;
+  title: string;
+  introduction: string;
+  status: string;
+  updatedAt: string;
+}
 interface CoursesListProps {
   formationId: string;
   moduleId: string;
 }
 
 export function CoursesList({ formationId, moduleId }: CoursesListProps) {
+  const [courses, setCourses] = useState<CourseListItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        const response = await getCoursesList(parseInt(moduleId));
+        
+        if (response.success) {
+          setCourses(response.data as CourseListItem[]);
+        } else {
+          setError(response.error || "Failed to load courses");
+        }
+      } catch (err) {
+        setError("An unexpected error occurred");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [moduleId]);
+
+  if (loading) {
+    return <div className="flex justify-center py-10">Loading courses...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500 py-10">{error}</div>;
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -81,7 +86,7 @@ export function CoursesList({ formationId, moduleId }: CoursesListProps) {
               </Link>
               <div className="absolute top-2 right-2">
                 <Badge
-                  variant={course.status === "publié" ? "default" : "secondary"}
+                  variant={course.status === "published" ? "default" : "secondary"}
                 >
                   {course.status}
                 </Badge>
@@ -132,14 +137,14 @@ export function CoursesList({ formationId, moduleId }: CoursesListProps) {
 
             <CardContent className="pb-2 flex-grow">
               <p className="text-sm text-muted-foreground mb-4">
-                {course.description}
+                {course.introduction || "Aucune description disponible"}
               </p>
             </CardContent>
 
             <CardFooter className="pt-2">
               <div className="flex justify-between items-center w-full">
                 <span className="text-xs text-muted-foreground">
-                  Dernière mise à jour: {course.lastUpdated}
+                  {course.updatedAt ? `Dernière mise à jour: ${new Date(course.updatedAt).toLocaleDateString()}` : ""}
                 </span>
               </div>
             </CardFooter>

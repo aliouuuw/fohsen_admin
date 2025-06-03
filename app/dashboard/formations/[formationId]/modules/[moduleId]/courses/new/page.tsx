@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/app/components/ui/button";
+import { Card, CardContent } from "@/app/components/ui/card";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
+import { Textarea } from "@/app/components/ui/textarea";
 import {
   ArrowLeft,
   Plus,
@@ -15,7 +15,7 @@ import {
   Activity,
   ArrowRight,
 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { useParams, useRouter } from "next/navigation";
 import {
   Select,
@@ -23,8 +23,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Resource, ResourcesTab } from "@/components/courses/ressources-tab";
+} from "@/app/components/ui/select";
+import { Resource, ResourcesTab } from "@/app/components/courses/ressources-tab";
 import { createCourse } from "@/app/actions/courses/actions";
 
 // Template for a new course

@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/app/components/ui/button"
 import { PlusCircle } from "lucide-react"
-import { ModulesList } from "@/components/modules/modules-list"
+import { ModulesList } from "@/app/components/modules/modules-list"
 import Link from "next/link"
 import { getModulesList } from "@/app/actions/courses/actions" // Import the action
 import { getFormation } from "@/app/actions/formations/actions"

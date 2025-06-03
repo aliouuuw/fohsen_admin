@@ -1,9 +1,8 @@
 import { notFound } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCourseDetails } from "@/app/actions/courses/actions"; // Import the new action
 import { Quiz, Resource } from '@prisma/client'; // Import types from Prisma client
 import { JsonValue } from '@prisma/client/runtime/library';
-import TiptapEditor from '@/components/courses/tiptap-editor';
+import CourseForm from '@/app/components/courses/CourseForm';
 
 interface EditCoursePageProps {
   params: {
@@ -49,48 +48,68 @@ async function getCourseData(courseId: number): Promise<CourseWithDetails | null
 
 
 export default async function EditCoursePage({ params }: EditCoursePageProps) {
-  const courseId = parseInt(params.courseId, 10); // Parse courseId to a number
+  const resolvedParams = await params;
+  const courseId = parseInt(resolvedParams.courseId, 10);
 
   if (isNaN(courseId)) {
-      notFound(); // Handle invalid course ID
+    notFound();
   }
 
-  // Fetch the course data including content
   const course = await getCourseData(courseId);
 
   if (!course) {
-    notFound(); // Show 404 if course not found
+    notFound();
   }
 
-  // Extract initial content (it can be null) and stringify for the editor
-  const initialContent = course.content ? JSON.stringify(course.content) : "";
+  let initialQuizDataForForm: Quiz | null = null;
 
+  if (course.quiz) {
+    let parsedOptions: JsonValue = course.quiz.options;
+    if (typeof course.quiz.options === 'string') {
+      try {
+        parsedOptions = JSON.parse(course.quiz.options);
+      } catch (err) {
+        console.error("Failed to parse quiz options:", course.quiz.options, err);
+        // Keep original or assign a default if parsing fails
+      }
+    }
+
+    let parsedCorrectAnswers: JsonValue = course.quiz.correctAnswers;
+    if (typeof course.quiz.correctAnswers === 'string') {
+      try {
+        parsedCorrectAnswers = JSON.parse(course.quiz.correctAnswers);
+      } catch (err) {
+        console.error("Failed to parse quiz correctAnswers:", course.quiz.correctAnswers, err);
+        // Keep original or assign a default
+      }
+    }
+    
+    initialQuizDataForForm = {
+      ...course.quiz, // Spread all original quiz properties
+      options: parsedOptions, // Override with parsed options
+      correctAnswers: parsedCorrectAnswers, // Override with parsed correctAnswers
+    };
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Edit Course: {course.title}</h2>
-        {/* Add breadcrumbs or back links here */}
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Course Content</CardTitle>
-          <CardDescription>Edit the rich content for this course.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <TiptapEditor
-            courseId={course.id.toString()} // Pass courseId as string to the component (component expects string)
-            initialContent={initialContent}
-            // The onSave logic is now handled internally by the CourseEditor
-            // which calls the saveCourseContent server action
-          />
-        </CardContent>
-      </Card>
-
-      {/* You can now use course.quiz and course.resources here to pass to other components */}
-      {/* For example: */}
-      {/* <QuizEditor courseId={course.id} initialQuiz={course.quiz} /> */}
-      {/* <ResourcesManager courseId={course.id} initialResources={course.resources} /> */}
+      <CourseForm
+        courseId={course.id.toString()}
+        initialData={{
+          title: course.title,
+          introduction: course.introduction || '',
+          objective: course.objective || '',
+          videoTitle: course.videoTitle || '',
+          videoUrl: course.videoUrl || '',
+          content: course.content,
+          order: course.order,
+          quiz: initialQuizDataForForm, // Use the correctly prepared quiz data
+          resources: course.resources,
+        }}
+      />
     </div>
   );
 }

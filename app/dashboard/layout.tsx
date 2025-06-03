@@ -1,6 +1,6 @@
-import { Sidebar } from "@/components/dashboard/sidebar"
-import { Header } from "@/components/dashboard/header"
-import { BreadcrumbProvider } from "@/components/dashboard/breadcrumb-provider"
+import { Sidebar } from "@/app/components/dashboard/sidebar"
+import { Header } from "@/app/components/dashboard/header"
+import { BreadcrumbProvider } from "@/app/components/dashboard/breadcrumb-provider"
 import { getUserAction } from "@/lib/authism/server/actions/auth"
 import { redirect } from "next/navigation"
 

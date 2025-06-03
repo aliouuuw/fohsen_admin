@@ -1,8 +1,8 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/app/components/ui/button"
 import { PlusCircle } from "lucide-react"
-import { CoursesList } from "@/components/courses/courses-list"
+import { CoursesList } from "@/app/components/courses/courses-list"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 

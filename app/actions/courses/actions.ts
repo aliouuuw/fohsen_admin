@@ -2,6 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { Prisma, ResourceType } from "@prisma/client";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 export async function saveCourseContent(courseId: number, content: string) {
   try {
@@ -184,5 +186,123 @@ export async function getCoursesList(moduleId: number) {
   } catch (error) {
     console.error("Get courses list error:", error);
     return { success: false, error: "Failed to fetch courses", data: [] };
+  }
+}
+
+interface CourseUpdateData {
+  title: string;
+  introduction?: string | null;
+  objective?: string | null;
+  videoTitle?: string | null;
+  videoUrl?: string | null;
+  content?: JsonValue | null;
+  order?: number;
+  // We'll handle quiz and resources separately for now to keep it modular
+  // but you could include them here if you prefer a single transaction
+}
+
+export async function updateCourse(courseId: number, data: CourseUpdateData) {
+  try {
+    const updatedCourse = await prisma.course.update({
+      where: { id: courseId },
+      data: {
+        title: data.title,
+        introduction: data.introduction,
+        objective: data.objective,
+        videoTitle: data.videoTitle,
+        videoUrl: data.videoUrl,
+        content: data.content === null ? Prisma.JsonNull : data.content,
+        order: data.order,
+        // Add other fields as necessary
+      },
+    });
+
+    revalidatePath(`/dashboard/formations/[formationId]/modules/[moduleId]/courses/${courseId}/edit`, 'page');
+    revalidatePath(`/dashboard/formations/[formationId]/modules/[moduleId]/courses/${courseId}`, 'page');
+    revalidatePath(`/dashboard/formations/[formationId]/modules/[moduleId]/courses`, 'page');
+
+    return {
+      success: true,
+      data: updatedCourse,
+    };
+  } catch (error) {
+    console.error("Update course error:", error);
+    return {
+      success: false,
+      error: "Failed to update course",
+    };
+  }
+}
+
+interface QuizData {
+  question: string;
+  options: JsonValue; // Prisma expects JsonValue for Json fields
+  correctAnswers: JsonValue; // Prisma expects JsonValue for Json fields
+}
+
+export async function upsertQuiz(courseId: number, quizData: QuizData) {
+  try {
+    const quiz = await prisma.quiz.upsert({
+      where: { courseId: courseId },
+      update: {
+        question: quizData.question,
+        options: quizData.options as Prisma.InputJsonValue,
+        correctAnswers: quizData.correctAnswers as Prisma.InputJsonValue,
+      },
+      create: {
+        courseId: courseId,
+        question: quizData.question,
+        options: quizData.options as Prisma.InputJsonValue,
+        correctAnswers: quizData.correctAnswers as Prisma.InputJsonValue,
+      },
+    });
+
+    revalidatePath(`/dashboard/formations/[formationId]/modules/[moduleId]/courses/${courseId}/edit`, 'page');
+
+    return {
+      success: true,
+      data: quiz,
+    };
+  } catch (error) {
+    console.error("Upsert quiz error:", error);
+    return {
+      success: false,
+      error: "Failed to save quiz",
+    };
+  }
+}
+
+interface ResourceData {
+  title: string;
+  type: ResourceType;
+  url: string;
+  description?: string | null;
+}
+
+export async function syncResources(courseId: number, resources: ResourceData[]) {
+  try {
+    // For simplicity, we'll delete existing resources and recreate them.
+    // For a more robust solution, you might want to compare and update/create/delete individually.
+    await prisma.resource.deleteMany({
+      where: { courseId: courseId },
+    });
+
+    if (resources.length > 0) {
+      await prisma.resource.createMany({
+        data: resources.map(res => ({ ...res, courseId })),
+      });
+    }
+
+    revalidatePath(`/dashboard/formations/[formationId]/modules/[moduleId]/courses/${courseId}/edit`, 'page');
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Sync resources error:", error);
+    return {
+      success: false,
+      error: "Failed to sync resources",
+    };
   }
 }

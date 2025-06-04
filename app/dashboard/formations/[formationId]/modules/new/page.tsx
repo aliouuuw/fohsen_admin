@@ -109,7 +109,7 @@ export default function NewModulePage() {
     }
 
     if (!formData.level) {
-      newErrors.level = "Le niveau est requis";
+      newErrors.level = "Le niveau est requis" as Level;
     }
 
     setErrors(newErrors);

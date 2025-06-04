@@ -9,12 +9,12 @@ import Image from "next/image";
 
 interface FormationPageProps {
   params: {
-    formationId: string;
+    formationId: Promise<string>;
   };
 }
 
 export default async function FormationOverviewPage({ params }: FormationPageProps) {
-  const formationId = parseInt(params.formationId, 10);
+  const formationId = parseInt(await params.formationId, 10);
 
   if (isNaN(formationId)) {
     notFound();

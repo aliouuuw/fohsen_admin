@@ -28,17 +28,18 @@ interface ModulesPageProps {
 }
 
 export default async function FormationModulesPage({ params }: ModulesPageProps) {
-  const formationId = parseInt(params.formationId, 10);
+  const { formationId } = await params;
+  const formationIdInt = parseInt(formationId, 10);
 
-  if (isNaN(formationId)) {
-    console.error("Invalid formationId:", params.formationId);
+  if (isNaN(formationIdInt)) {
+    console.error("Invalid formationId:", formationId);
     notFound();
   }
 
   // Fetch both modules and formation data
   const [modulesResult, formationResult] = await Promise.all([
-    getModulesList(formationId),
-    getFormation(formationId)
+    getModulesList(formationIdInt),
+    getFormation(formationIdInt)
   ]);
 
   if (!formationResult.success || !formationResult.data) {
@@ -74,7 +75,7 @@ export default async function FormationModulesPage({ params }: ModulesPageProps)
             </p>
           </div>
         </div>
-        <Link href={`/dashboard/formations/${params.formationId}/modules/new`}>
+        <Link href={`/dashboard/formations/${formationId}/modules/new`}>
           <Button size="lg">
             <Plus className="h-4 w-4 mr-2" />
             Nouveau Module
@@ -152,7 +153,7 @@ export default async function FormationModulesPage({ params }: ModulesPageProps)
               Chaque module peut contenir plusieurs cours pour organiser votre contenu pédagogique.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link href={`/dashboard/formations/${params.formationId}/modules/new`}>
+              <Link href={`/dashboard/formations/${formationId}/modules/new`}>
                 <Button size="lg">
                   <Plus className="h-4 w-4 mr-2" />
                   Créer le premier module
@@ -177,7 +178,7 @@ export default async function FormationModulesPage({ params }: ModulesPageProps)
                 </CardTitle>
                 
                 <div className="flex items-center space-x-3">
-                  <Link href={`/dashboard/formations/${params.formationId}/modules/new`}>
+                  <Link href={`/dashboard/formations/${formationId}/modules/new`}>
                     <Button>
                       <Plus className="h-4 w-4 mr-2" />
                       Nouveau module
@@ -189,7 +190,7 @@ export default async function FormationModulesPage({ params }: ModulesPageProps)
           </Card>
 
           {/* Modules Grid */}
-          <ModulesList formationId={params.formationId} modules={modules} />
+          <ModulesList formationId={formationIdInt.toString()} modules={modules} />
         </div>
       )}
 

@@ -11,7 +11,10 @@ import { Bell, User } from "lucide-react"
 import { LogoutButton } from "@/lib/authism/client/components/logout-button"
 export function Header() {
   return (
-    <header className="border-b bg-sidebar-primary text-sidebar-primary-foreground">
+    <header className="w-full border-b bg-sidebar-primary text-sidebar-primary-foreground flex justify-between items-center">
+      <div className="px-6 bg-sidebar-primary">
+        <h1 className="text-xl font-bold text-sidebar-primary-foreground">Fohsen Admin</h1>
+      </div>
       <div className="flex h-16 items-center px-6">
         <div className="ml-auto flex items-center space-x-4">
           <Button variant="ghost" size="icon">
@@ -25,10 +28,10 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Profil</DropdownMenuItem>
+              <DropdownMenuItem>Paramètres</DropdownMenuItem>
               <DropdownMenuItem>
                 <LogoutButton />
               </DropdownMenuItem>

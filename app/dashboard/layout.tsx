@@ -15,16 +15,20 @@ export default async function DashboardLayout({
     redirect("/")
   }
   return (
-    <div className="relative flex min-h-screen">
-      <Sidebar />
-      <div className="flex-1">
-        <Header />
-        <main className="border-l p-6">
-          <div className="mb-4">
-            <BreadcrumbProvider />
-          </div>
-          {children}
-        </main>
+    <div className="h-screen max-h-screen flex flex-col">
+      <Header />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <div className="flex-1 flex flex-col">
+          <main className="border-l flex-1 overflow-hidden">
+            <div className="h-full overflow-y-auto p-6">
+              <div className="mb-4">
+                <BreadcrumbProvider />
+              </div>
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   )

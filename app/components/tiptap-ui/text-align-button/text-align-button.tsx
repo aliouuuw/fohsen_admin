@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { type Editor, type ChainedCommands } from "@tiptap/react"
+import { type Editor, type ChainedCommands, type CanCommands } from "@tiptap/react"
 
 // --- Hooks ---
 import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
@@ -67,6 +67,14 @@ export function hasSetTextAlign(
   return "setTextAlign" in commands
 }
 
+export function hasCanSetTextAlign(
+  commands: CanCommands
+): commands is CanCommands & {
+  setTextAlign: (align: TextAlign) => boolean
+} {
+  return "setTextAlign" in commands
+}
+
 export function checkTextAlignExtension(editor: Editor | null): boolean {
   if (!editor) return false
 
@@ -92,7 +100,11 @@ export function canSetTextAlign(
   if (!editor || !alignAvailable) return false
 
   try {
-    return editor.can().setTextAlign(align)
+    const canCommands = editor.can()
+    if (hasCanSetTextAlign(canCommands)) {
+      return canCommands.setTextAlign(align)
+    }
+    return false
   } catch {
     return false
   }

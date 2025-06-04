@@ -24,7 +24,7 @@ export interface ModuleListItem {
 }
 
 interface ModulesPageProps {
-  params: { formationId: string };
+  params: Promise<{ formationId: string }>;
 }
 
 export default async function FormationModulesPage({ params }: ModulesPageProps) {

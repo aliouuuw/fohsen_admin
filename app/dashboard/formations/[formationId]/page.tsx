@@ -8,19 +8,18 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface FormationPageProps {
-  params: {
-    formationId: Promise<string>;
-  };
+  params: Promise<{ formationId: string }>;
 }
 
 export default async function FormationOverviewPage({ params }: FormationPageProps) {
-  const formationId = parseInt(await params.formationId, 10);
+  const { formationId } = await params;
+  const formationIdInt = parseInt(formationId, 10);
 
-  if (isNaN(formationId)) {
+  if (isNaN(formationIdInt)) {
     notFound();
   }
 
-  const result = await getFormation(formationId);
+  const result = await getFormation(formationIdInt);
 
   if (!result.success || !result.data) {
     notFound();

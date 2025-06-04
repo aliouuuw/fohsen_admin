@@ -5,11 +5,11 @@ import { JsonValue } from '@prisma/client/runtime/library';
 import CourseForm from '@/app/components/courses/CourseForm';
 
 interface EditCoursePageProps {
-  params: {
+  params: Promise<{
     formationId: string;
     moduleId: string;
     courseId: string;
-  };
+  }>;
 }
 
 // Update the interface to match the data returned by getCourseDetails

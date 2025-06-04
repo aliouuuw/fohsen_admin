@@ -114,6 +114,7 @@ enum ResourceType {
   DOCUMENT
   LINK
   IMAGE
+  VIDEO
 }
 
 model Enrollment {

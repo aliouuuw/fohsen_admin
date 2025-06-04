@@ -117,6 +117,17 @@ export default function ResourceManager({
                 onUploadError={(error: Error) => {
                   console.error('Upload Error:', error);
                 }}
+                content={{
+                  button({ ready }) {
+                    if (ready) return "Choisir un fichier";
+                    return "Préparation...";
+                  },
+                  allowedContent({ ready, fileTypes, isUploading }) {
+                    if (!ready) return "Vérification des types de fichiers...";
+                    if (isUploading) return "Téléchargement en cours...";
+                    return `Formats acceptés: ${fileTypes.join(", ")}`;
+                  },
+                }}
               />
             </div>
 

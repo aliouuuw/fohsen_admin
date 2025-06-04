@@ -319,7 +319,7 @@ export function FormationsList({ formations }: FormationsListProps) {
                 </Link>
                 
                 <Link href={`/dashboard/formations/${formation.id}/edit`} className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="secondary" size="sm" className="w-full">
                     <Pencil className="h-3 w-3 mr-1" />
                     Modifier
                   </Button>

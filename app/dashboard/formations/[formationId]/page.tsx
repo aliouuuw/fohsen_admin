@@ -53,7 +53,7 @@ export default async function FormationOverviewPage({ params }: FormationPagePro
         </div>
         <div className="flex space-x-2">
           <Link href={`/dashboard/formations/${formation.id}/edit`}>
-            <Button variant="outline">
+            <Button variant="secondary">
               <Edit className="h-4 w-4 mr-2" />
               Modifier
             </Button>
@@ -191,7 +191,7 @@ export default async function FormationOverviewPage({ params }: FormationPagePro
                       </div>
                       <div className="flex space-x-2">
                         <Link href={`/dashboard/formations/${formation.id}/modules/${module.id}/edit`}>
-                          <Button variant="outline" size="sm">
+                          <Button variant="secondary" size="sm">
                             <Edit className="h-4 w-4 mr-1" />
                             Modifier
                           </Button>

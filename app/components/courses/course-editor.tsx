@@ -295,11 +295,16 @@ export default function CourseEditor({ courseId, initialContent = "" }: CourseEd
                               <ImageIcon className="h-4 w-4" />
                             </Toggle>
                           </TooltipTrigger>
-                          <TooltipContent>Upload Image</TooltipContent>
+                          <TooltipContent>Télécharger une image</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     );
-                  }
+                  },
+                  allowedContent({ ready, fileTypes, isUploading }) {
+                    if (!ready) return "Vérification...";
+                    if (isUploading) return "Téléchargement...";
+                    return `${fileTypes.join(", ")}`;
+                  },
                 }}
               />
 
@@ -321,11 +326,16 @@ export default function CourseEditor({ courseId, initialContent = "" }: CourseEd
                               <FileVideo className="h-4 w-4" />
                             </Toggle>
                           </TooltipTrigger>
-                          <TooltipContent>Upload Video</TooltipContent>
+                          <TooltipContent>Télécharger une vidéo</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     );
-                  }
+                  },
+                  allowedContent({ ready, fileTypes, isUploading }) {
+                    if (!ready) return "Vérification...";
+                    if (isUploading) return "Téléchargement...";
+                    return `${fileTypes.join(", ")}`;
+                  },
                 }}
               />
 
@@ -347,11 +357,16 @@ export default function CourseEditor({ courseId, initialContent = "" }: CourseEd
                               <FileUp className="h-4 w-4" />
                             </Toggle>
                           </TooltipTrigger>
-                          <TooltipContent>Upload File</TooltipContent>
+                          <TooltipContent>Télécharger un fichier</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     );
-                  }
+                  },
+                  allowedContent({ ready, fileTypes, isUploading }) {
+                    if (!ready) return "Vérification...";
+                    if (isUploading) return "Téléchargement...";
+                    return `${fileTypes.join(", ")}`;
+                  },
                 }}
               />
             </div>

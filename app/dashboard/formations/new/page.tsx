@@ -258,13 +258,12 @@ export default function NewFormationPage() {
             <CardContent>
               <div className="space-y-4">
                 {formation.thumbnail ? (
-                  <div className="relative">
+                  <div className="relative h-64 w-full">
                     <Image
                       src={formation.thumbnail}
                       alt="Formation thumbnail"
                       className="w-full h-48 object-cover rounded-lg border"
-                      width={100}
-                      height={100}
+                      fill
                     />
                     <Button
                       variant="destructive"
@@ -293,6 +292,17 @@ export default function NewFormationPage() {
                         onUploadError={(error: Error) => {
                           console.error('Upload Error:', error);
                           toast.error('Erreur lors du téléchargement de l\'image');
+                        }}
+                        content={{
+                          button({ ready }) {
+                            if (ready) return "Choisir une image";
+                            return "Préparation...";
+                          },
+                          allowedContent({ ready, fileTypes, isUploading }) {
+                            if (!ready) return "Vérification des types de fichiers...";
+                            if (isUploading) return "Téléchargement en cours...";
+                            return `Formats acceptés: ${fileTypes.join(", ")}`;
+                          },
                         }}
                         appearance={{
                           button: "bg-primary text-primary-foreground hover:bg-primary/90",

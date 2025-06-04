@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/ca
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
-import { ArrowLeft, Upload, Save, Trash2, Eye, AlertCircle } from "lucide-react";
+import { ArrowLeft, Upload, Save, Trash2, AlertCircle, AlertTriangle, Book, Lightbulb } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import {
   Select,
@@ -20,7 +20,6 @@ import { getFormation, updateFormation, deleteFormation, publishFormation } from
 import Link from "next/link";
 import { Badge } from "@/app/components/ui/badge";
 import { toast } from "sonner";
-import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import Image from "next/image";
 
 interface FormationData {
@@ -264,15 +263,14 @@ export default function EditFormationPage() {
 
   return (
     <div className="space-y-6 pb-10">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <div>
           <Link href="/dashboard/formations">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-muted-foreground/20">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Retour aux formations
             </Button>
           </Link>
-          <div>
+          <div className="flex flex-col flex-1 items-center justify-center">
             <div className="flex items-center space-x-3">
               <h1 className="text-3xl font-bold">Modifier la Formation</h1>
               <Badge variant={formation.status === "PUBLISHED" ? "default" : "secondary"}>
@@ -283,36 +281,38 @@ export default function EditFormationPage() {
               Modifier les détails de la formation &quot;{formation.title}&quot;
             </p>
           </div>
-        </div>
-        <div className="flex space-x-2">
-          <Link href={`/dashboard/formations/${formation.id}`}>
-            <Button variant="outline" size="sm">
-              <Eye className="h-4 w-4 mr-2" />
-              Aperçu
-            </Button>
-          </Link>
-        </div>
       </div>
 
       {hasChanges && (
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Vous avez des modifications non sauvegardées. N&apos;oubliez pas de sauvegarder vos changements.
-          </AlertDescription>
-        </Alert>
+        <div className="bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+            <div>
+              <h4 className="font-medium text-yellow-800 dark:text-yellow-200">
+                Modifications non sauvegardées
+              </h4>
+              <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                Vous avez des modifications non sauvegardées. N&apos;oubliez pas de sauvegarder vos changements.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Basic Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Informations de base</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <Book className="h-5 w-5" />
+                <span>Informations de base</span>
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="title">
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-base font-medium">
                   Titre de la formation <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -323,15 +323,15 @@ export default function EditFormationPage() {
                   className={errors.title ? "border-red-500" : ""}
                 />
                 {errors.title && (
-                  <Alert variant="destructive" className="mt-2">
+                  <p className="text-sm text-red-600 flex items-center space-x-1">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{errors.title}</AlertDescription>
-                  </Alert>
+                    <span>{errors.title}</span>
+                  </p>
                 )}
               </div>
 
-              <div>
-                <Label htmlFor="description">
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-base font-medium">
                   Description <span className="text-red-500">*</span>
                 </Label>
                 <Textarea
@@ -343,15 +343,17 @@ export default function EditFormationPage() {
                   className={errors.description ? "border-red-500" : ""}
                 />
                 {errors.description && (
-                  <Alert variant="destructive" className="mt-2">
+                  <p className="text-sm text-red-600 flex items-center space-x-1">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{errors.description}</AlertDescription>
-                  </Alert>
+                    <span>{errors.description}</span>
+                  </p>
                 )}
               </div>
 
-              <div>
-                <Label htmlFor="passingGrade">Note de passage (%)</Label>
+              <div className="space-y-2">
+                <Label htmlFor="passingGrade" className="text-base font-medium">
+                  Note de passage (%)
+                </Label>
                 <Select
                   value={formation.passingGrade.toString()}
                   onValueChange={(value) => updateFormationField("passingGrade", parseInt(value))}
@@ -369,27 +371,30 @@ export default function EditFormationPage() {
                     <SelectItem value="90">90% - Expert</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-muted-foreground">
                   Note minimale requise pour obtenir la certification
                 </p>
               </div>
             </CardContent>
           </Card>
 
+          {/* Image Upload */}
           <Card>
             <CardHeader>
-              <CardTitle>Image de couverture</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <Upload className="h-5 w-5" />
+                <span>Image de couverture</span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {formation.thumbnail ? (
-                  <div className="relative">
+                  <div className="relative h-64 w-full">
                     <Image
                       src={formation.thumbnail}
                       alt="Formation thumbnail"
                       className="w-full h-48 object-cover rounded-lg border"
-                      width={100}
-                      height={100}
+                      fill
                     />
                     <Button
                       variant="destructive"
@@ -419,8 +424,19 @@ export default function EditFormationPage() {
                           console.error('Upload Error:', error);
                           toast.error('Erreur lors du téléchargement de l\'image');
                         }}
+                        content={{
+                          button({ ready }) {
+                            if (ready) return "Choisir une image";
+                            return "Préparation...";
+                          },
+                          allowedContent({ ready, fileTypes, isUploading }) {
+                            if (!ready) return "Vérification des types de fichiers...";
+                            if (isUploading) return "Téléchargement en cours...";
+                            return `Formats acceptés: ${fileTypes.join(", ")}`;
+                          },
+                        }}
                         appearance={{
-                          button: "bg-primary text-primary-foreground hover:bg-primary/90",
+                          button: "bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90",
                         }}
                       />
                     </div>
@@ -433,6 +449,43 @@ export default function EditFormationPage() {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                onClick={handleUpdateFormation}
+                disabled={!isFormValid() || isLoading || !hasChanges}
+                className="w-full bg-primary hover:bg-primary/90"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {isLoading ? "Sauvegarde..." : "Sauvegarder les modifications"}
+              </Button>
+              
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={() => router.push(`/dashboard/formations/${formation.id}/modules`)}
+              >
+                <Book className="h-4 w-4 mr-2" />
+                Gérer les modules
+              </Button>
+
+              <Button
+                variant="destructive"
+                className="w-full bg-destructive/90 hover:bg-destructive"
+                onClick={handleDeleteFormation}
+                disabled={isDeleting}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {isDeleting ? "Suppression..." : "Supprimer la formation"}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Publication Status */}
           <Card>
             <CardHeader>
               <CardTitle>Statut de publication</CardTitle>
@@ -460,7 +513,7 @@ export default function EditFormationPage() {
                   }
                 </p>
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   className="w-full"
                   onClick={handlePublishToggle}
                   disabled={isPublishing}
@@ -472,62 +525,32 @@ export default function EditFormationPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* Tips Card */}
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200 dark:border-blue-800">
             <CardHeader>
-              <CardTitle>Actions</CardTitle>
+              <CardTitle className="flex items-center space-x-2 text-blue-900 dark:text-blue-100">
+                <Lightbulb className="h-5 w-5" />
+                <span>Conseils</span>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <Button
-                onClick={handleUpdateFormation}
-                disabled={!isFormValid() || isLoading || !hasChanges}
-                className="w-full"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                {isLoading ? "Sauvegarde..." : "Sauvegarder les modifications"}
-              </Button>
-              
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => router.push(`/dashboard/formations/${formation.id}/modules`)}
-              >
-                Gérer les modules
-              </Button>
-
-              <Button
-                variant="destructive"
-                className="w-full"
-                onClick={handleDeleteFormation}
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                {isDeleting ? "Suppression..." : "Supprimer la formation"}
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Navigation rapide</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Link 
-                  href={`/dashboard/formations/${formation.id}/modules`}
-                  className="block"
-                >
-                  <Button variant="ghost" className="w-full justify-start">
-                    Voir les modules
-                  </Button>
-                </Link>
-                <Link 
-                  href={`/dashboard/formations/${formation.id}`}
-                  className="block"
-                >
-                  <Button variant="ghost" className="w-full justify-start">
-                    Aperçu de la formation
-                  </Button>
-                </Link>
+            <CardContent className="space-y-3 text-sm text-blue-700 dark:text-blue-300">
+              <div className="flex items-start space-x-2">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
+                <div>
+                  <strong>Titre descriptif :</strong> Utilisez un titre clair qui résume le contenu
+                </div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
+                <div>
+                  <strong>Description complète :</strong> Détaillez les objectifs d&apos;apprentissage
+                </div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
+                <div>
+                  <strong>Note de passage :</strong> Choisissez selon la difficulté souhaitée
+                </div>
               </div>
             </CardContent>
           </Card>

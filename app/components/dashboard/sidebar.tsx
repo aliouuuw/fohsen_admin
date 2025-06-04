@@ -61,7 +61,7 @@ export function Sidebar() {
 
   return (
     <div className={cn(
-      "h-full flex flex-col bg-sidebar text-foreground transition-all duration-300",
+      "flex flex-col h-full bg-sidebar text-foreground transition-all duration-300",
       isCollapsed ? "w-16" : "w-64"
     )}>
       <nav className="flex-1 p-4">

@@ -22,6 +22,7 @@ import Link from "next/link";
 import { Card, CardHeader, CardContent, CardFooter } from "../ui/card";
 import { useEffect, useState } from "react";
 import { getCoursesList } from "@/app/actions/courses/actions";
+import Image from "next/image";
 
 interface CourseListItem {
   id: number;
@@ -29,7 +30,11 @@ interface CourseListItem {
   introduction: string;
   status: string;
   updatedAt: string;
+  thumbnail?: string | null;
+  hasQuiz?: boolean;
+  hasResources?: boolean;
 }
+
 interface CoursesListProps {
   formationId: string;
   moduleId: string;
@@ -39,6 +44,7 @@ export function CoursesList({ formationId, moduleId }: CoursesListProps) {
   const [courses, setCourses] = useState<CourseListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [failedThumbnails, setFailedThumbnails] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -62,8 +68,12 @@ export function CoursesList({ formationId, moduleId }: CoursesListProps) {
     fetchCourses();
   }, [moduleId]);
 
+  const handleThumbnailError = (courseId: number) => {
+    setFailedThumbnails(prev => new Set(prev.add(courseId)));
+  };
+
   if (loading) {
-    return <div className="flex justify-center py-10">Loading courses...</div>;
+    return <div className="flex justify-center py-10">Chargement des cours...</div>;
   }
 
   if (error) {
@@ -73,83 +83,112 @@ export function CoursesList({ formationId, moduleId }: CoursesListProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courses.map((course) => (
-          <Card key={course.id} className="overflow-hidden flex flex-col">
-            <div className="relative h-48 bg-slate-200">
-              {/* Placeholder for course thumbnail */}
-              <Link
-                href={`/dashboard/formations/${formationId}/modules/${moduleId}/courses/${course.id}/edit`}
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Video className="h-10 w-10 text-slate-400" />
-                </div>
-              </Link>
-              <div className="absolute top-2 right-2">
-                <Badge
-                  variant={course.status === "published" ? "default" : "secondary"}
-                >
-                  {course.status}
-                </Badge>
-              </div>
-            </div>
-
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
+        {courses.map((course) => {
+          const shouldShowThumbnail = course.thumbnail && !failedThumbnails.has(course.id);
+          
+          return (
+            <Card key={course.id} className="overflow-hidden flex flex-col">
+              <div className="relative h-48 bg-slate-200">
+                {/* Course thumbnail - YouTube thumbnail or placeholder */}
                 <Link
-                  className="hover:underline"
                   href={`/dashboard/formations/${formationId}/modules/${moduleId}/courses/${course.id}/edit`}
                 >
-                  <h3 className="text-lg font-semibold">{course.title}</h3>
+                  {shouldShowThumbnail && course.thumbnail ? (
+                    <Image
+                      src={course.thumbnail}
+                      alt={`Thumbnail for ${course.title}`}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={() => handleThumbnailError(course.id)}
+                      width={100}
+                      height={100}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Video className="h-10 w-10 text-slate-400" />
+                    </div>
+                  )}
                 </Link>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="-mt-1">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <Link
-                      href={`/dashboard/formations/${formationId}/modules/${moduleId}/courses/${course.id}/edit`}
-                    >
-                      <DropdownMenuItem>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Modifier le contenu
-                      </DropdownMenuItem>
-                    </Link>
-                    <Link
-                      href={`/dashboard/formations/${formationId}/modules/${moduleId}/courses/${course.id}/edit?preview=true`}
-                    >
-                      <DropdownMenuItem>
-                        <Eye className="mr-2 h-4 w-4" />
-                        Aperçu
-                      </DropdownMenuItem>
-                    </Link>
-                    <DropdownMenuItem className="text-red-600">
-                      <Trash className="mr-2 h-4 w-4" />
-                      Supprimer
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Status badge overlay */}
+                <div className="absolute top-2 right-2">
+                  <Badge
+                    variant={course.status === "published" ? "default" : "secondary"}
+                  >
+                    {course.status}
+                  </Badge>
+                </div>
+                {/* Course indicators overlay */}
+                <div className="absolute bottom-2 left-2 flex gap-1">
+                  {course.hasQuiz && (
+                    <Badge variant="outline" className="text-xs bg-white/90">
+                      Quiz
+                    </Badge>
+                  )}
+                  {course.hasResources && (
+                    <Badge variant="outline" className="text-xs bg-white/90">
+                      Ressources
+                    </Badge>
+                  )}
+                </div>
               </div>
-            </CardHeader>
 
-            <CardContent className="pb-2 flex-grow">
-              <p className="text-sm text-muted-foreground mb-4">
-                {course.introduction || "Aucune description disponible"}
-              </p>
-            </CardContent>
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <Link
+                    className="hover:underline"
+                    href={`/dashboard/formations/${formationId}/modules/${moduleId}/courses/${course.id}/edit`}
+                  >
+                    <h3 className="text-lg font-semibold">{course.title}</h3>
+                  </Link>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="-mt-1">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <Link
+                        href={`/dashboard/formations/${formationId}/modules/${moduleId}/courses/${course.id}/edit`}
+                      >
+                        <DropdownMenuItem>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Modifier le contenu
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link
+                        href={`/dashboard/formations/${formationId}/modules/${moduleId}/courses/${course.id}/edit?preview=true`}
+                      >
+                        <DropdownMenuItem>
+                          <Eye className="mr-2 h-4 w-4" />
+                          Aperçu
+                        </DropdownMenuItem>
+                      </Link>
+                      <DropdownMenuItem className="text-red-600">
+                        <Trash className="mr-2 h-4 w-4" />
+                        Supprimer
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardHeader>
 
-            <CardFooter className="pt-2">
-              <div className="flex justify-between items-center w-full">
-                <span className="text-xs text-muted-foreground">
-                  {course.updatedAt ? `Dernière mise à jour: ${new Date(course.updatedAt).toLocaleDateString()}` : ""}
-                </span>
-              </div>
-            </CardFooter>
-          </Card>
-        ))}
+              <CardContent className="pb-2 flex-grow">
+                <p className="text-sm text-muted-foreground mb-4">
+                  {course.introduction || "Aucune description disponible"}
+                </p>
+              </CardContent>
+
+              <CardFooter className="pt-2">
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-xs text-muted-foreground">
+                    {course.updatedAt ? `Dernière mise à jour: ${new Date(course.updatedAt).toLocaleDateString()}` : ""}
+                  </span>
+                </div>
+              </CardFooter>
+            </Card>
+          );
+        })}
 
         {/* Add New Course Card */}
         <Link

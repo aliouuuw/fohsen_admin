@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { getCourseDetails } from "@/app/actions/courses/actions"; // Import the new action
 import { Quiz, Resource } from '@prisma/client'; // Import types from Prisma client
 import { JsonValue } from '@prisma/client/runtime/library';
-import CourseForm from '@/app/components/courses/CourseForm';
+import SimplifiedCourseForm from '@/app/components/courses/SimplifiedCourseForm';
 
 interface EditCoursePageProps {
   params: Promise<{
@@ -92,21 +92,25 @@ export default async function EditCoursePage({ params }: EditCoursePageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Edit Course: {course.title}</h2>
+    <div className="flex-1 flex flex-col space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Éditer le cours</h1>
+          <p className="text-muted-foreground mt-1">
+            Modifiez le contenu, les ressources et les paramètres de votre cours
+          </p>
+        </div>
       </div>
-      <CourseForm
+      
+      <SimplifiedCourseForm
         courseId={course.id.toString()}
         initialData={{
           title: course.title,
           introduction: course.introduction || '',
           objective: course.objective || '',
-          videoTitle: course.videoTitle || '',
-          videoUrl: course.videoUrl || '',
           content: course.content,
           order: course.order,
-          quiz: initialQuizDataForForm, // Use the correctly prepared quiz data
+          quiz: initialQuizDataForForm,
           resources: course.resources,
         }}
       />

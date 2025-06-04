@@ -292,7 +292,7 @@ export default function CourseEditor({ courseId, initialContent = "" }: CourseEd
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Toggle className={!ready ? "opacity-50" : ""}>
-                              <ImageIcon className="h-4 w-4" />
+                              <ImageIcon className="h-4 w-4 text-primary" />
                             </Toggle>
                           </TooltipTrigger>
                           <TooltipContent>Télécharger une image</TooltipContent>

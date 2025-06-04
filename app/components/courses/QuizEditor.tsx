@@ -74,7 +74,7 @@ export default function QuizEditor({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Quiz Editor</CardTitle>
+        <CardTitle>Éditer le quiz</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
@@ -120,7 +120,7 @@ export default function QuizEditor({
             variant="outline"
             onClick={addOption}
           >
-            Add Option
+            Ajouter une option
           </Button>
         </div>
       </CardContent>

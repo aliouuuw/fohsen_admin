@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { Prisma, ResourceType } from "@prisma/client";
 import { JsonValue } from "@prisma/client/runtime/library";
+import { getFirstYouTubeThumbnail } from "@/lib/youtube-utils";
 
 export async function saveCourseContent(courseId: number, content: string) {
   try {
@@ -164,20 +165,30 @@ export async function getCoursesList(moduleId: number) {
     const courses = await prisma.course.findMany({
       where: { moduleId: moduleId },
       orderBy: { order: 'asc' }, // Order courses by their defined order
-      include: {
-         quiz: { // Include quiz data to check if it exists
-           select: { id: true }
-         },
-         resources: { // Include resources data to check if they exist
-           select: { id: true }
-         }
+      select: {
+        id: true,
+        title: true,
+        introduction: true,
+        updatedAt: true,
+        content: true, // Include content to extract YouTube thumbnails
+        quiz: { // Include quiz data to check if it exists
+          select: { id: true }
+        },
+        resources: { // Include resources data to check if they exist
+          select: { id: true }
+        }
       },
     });
-    // Map to include hasQuiz/hasResources flags
+    
+    // Map to include hasQuiz/hasResources flags and YouTube thumbnail
     const coursesWithFlags = courses.map(course => ({
-        ...course,
+        id: course.id,
+        title: course.title,
+        introduction: course.introduction,
+        updatedAt: course.updatedAt,
         hasQuiz: !!course.quiz,
         hasResources: course.resources.length > 0,
+        thumbnail: getFirstYouTubeThumbnail(course.content), // Extract YouTube thumbnail
         // Add status 'published'/'draft' if you add a status field to Course model
         status: 'published', // Placeholder, update schema and logic if needed
     }));

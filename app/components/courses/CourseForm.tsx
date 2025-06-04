@@ -17,6 +17,7 @@ import { UploadButton } from "@/utils/uploadthing";
 import { updateCourse, upsertQuiz, syncResources } from '@/app/actions/courses/actions';
 import { ResourceType, Quiz as PrismaQuiz, Resource as PrismaResource } from '@prisma/client';
 import { JsonValue } from '@prisma/client/runtime/library';
+import { toast } from "sonner";
 
 // Form validation schema
 const courseSchema = z.object({
@@ -25,7 +26,6 @@ const courseSchema = z.object({
   objective: z.string().optional(),
   videoTitle: z.string().optional(),
   videoUrl: z.string().url().optional().or(z.literal("")),
-  content: z.any(), // TipTap content
   order: z.number(),
 });
 
@@ -46,6 +46,7 @@ interface QuizFormData {
 
 interface CourseFormProps {
   initialData?: CourseFormData & {
+    content?: JsonValue; // TipTap content (handled separately from form)
     quiz?: PrismaQuiz | null;
     resources?: PrismaResource[];
   };
@@ -82,7 +83,6 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
       objective: initialData?.objective || "",
       videoTitle: initialData?.videoTitle || "",
       videoUrl: initialData?.videoUrl || "",
-      content: initialData?.content || null,
       order: initialData?.order || 0,
     },
   });
@@ -92,14 +92,14 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
     try {
       const numericCourseId = parseInt(courseId, 10);
 
-      // 1. Update basic course details
+      // 1. Update basic course details (content is handled separately by TipTap editor)
       const courseUpdateResult = await updateCourse(numericCourseId, {
         title: data.title,
         introduction: data.introduction,
         objective: data.objective,
         videoTitle: data.videoTitle,
         videoUrl: data.videoUrl,
-        content: data.content, // This comes from TipTap editor via form.setValue
+        // content is not included here - TipTap editor handles it independently
         order: data.order,
       });
 
@@ -125,11 +125,11 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
         throw new Error(resourcesResult.error || "Failed to save resources");
       }
 
-      alert("Course saved successfully!"); // Replace with a proper notification
+      toast.success("Cours sauvegardé avec succès!");
 
     } catch (error) {
       console.error('Error saving course:', error);
-      alert(`Error: ${(error as Error).message}`); // Replace with a proper error display
+      toast.error(`Erreur: ${(error as Error).message}`);
     } finally {
       setIsSaving(false);
     }
@@ -185,16 +185,11 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
             </CardHeader>
             <CardContent>
               <TiptapEditor
-                courseId={courseId} // Pass courseId as string
-                initialContent={JSON.stringify(form.getValues("content") || "")} // Ensure stringified JSON for TipTap
-                onChange={(newContent: string) => {
-                    try {
-                        form.setValue("content", JSON.parse(newContent));
-                    } catch (e) {
-                        console.log(e);
-                        console.warn("Content from TipTap is not valid JSON, storing as string or check TipTap config", newContent);
-                        form.setValue("content", newContent);
-                    }
+                courseId={courseId}
+                initialContent={initialData?.content}
+                onSaved={() => {
+                  // Content is saved independently by TipTap editor
+                  // The course content is already persisted to the database
                 }}
               />
             </CardContent>
